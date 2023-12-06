@@ -1,0 +1,40 @@
+{
+    "cSpell.words": [
+        "Année",
+        "brotli",
+        "clientlib",
+        "clientlibs",
+        "colorutils",
+        "dataviewutils",
+        "DATETIME",
+        "dscv",
+        "formattingutils",
+        "gsgl",
+        "IRGB",
+        "Jahr",
+        "Mois",
+        "Monat",
+        "pbiviz",
+        "Phong",
+        "Quartal",
+        "Roboto",
+        "Semaine",
+        "Semana",
+        "tooltiputils",
+        "Trimestre",
+        "voronoi",
+        "Woche",
+        "xmax",
+        "ymax"
+    ],
+    "cloudcode.duetAI.inlineSuggestions.enableAuto": false,
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext",
+        "typescript"
+    ]
+}

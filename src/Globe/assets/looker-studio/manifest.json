@@ -1,0 +1,25 @@
+{
+    "name": "Globe",
+    "organization": "Supermetrics",
+    "description": "Hackathon 2023 – Visualize geo location data on a 3D globe",
+    "logoUrl": "https://storage.googleapis.com/dscv/public/images/icons/supermetrics-icon.png",
+    "organizationUrl": "http://www.supermetrics.com",
+    "supportUrl": "https://support.supermetrics.com/support/home",
+    "privacyPolicyUrl": "https://supermetrics.com/privacy-policy",
+    "termsOfServiceUrl": "https://supermetrics.com/terms-of-service",
+    "packageUrl": "https://smlink.net/demo-hackathon-2023",
+    "devMode": true,
+    "components": [
+        {
+            "id": "globe",
+            "name": "Globe",
+            "description": "Visualize geo location data on a 3D globe",
+            "iconUrl": "https://storage.googleapis.com/dscv/public/globe/icons/globe.png",
+            "resource": {
+                "js": "gs://dscv/public/globe/globe.js",
+                "config": "gs://dscv/public/globe/config.json",
+                "css": "gs://dscv/public/globe/globe.css"
+            }
+        }
+    ]
+}

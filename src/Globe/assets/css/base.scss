@@ -1,0 +1,25 @@
+body,
+html {
+  margin: 0 auto;
+  padding: 0;
+  font-family: sans-serif;
+  font-size: 21px;
+  line-height: 32px;
+  color: #3d3d3d;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.test,
+.container {
+  height: 100%;
+  width: 100%;
+}
+
+line,
+rect {
+  shape-rendering: crispEdges;
+}
