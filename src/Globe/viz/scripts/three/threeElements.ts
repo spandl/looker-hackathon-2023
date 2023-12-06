@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { base64Images } from '../base64Images';
 
 export const threeElements = {
-    createGlobe({ radius, texture }) {
+    createGlobe(radius: number) {
         const geometry = new THREE.SphereGeometry(radius / 3, 360, 360, 0);
         const mask = new THREE.TextureLoader().load(base64Images.mask);
 

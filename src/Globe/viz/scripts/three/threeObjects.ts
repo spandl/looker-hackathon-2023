@@ -8,8 +8,8 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export const threeObjects = {
-    createEnvironment: ({ applicationSettings, domElement, width, height }) => {
-        const scene = threeObjects.createScene(applicationSettings);
+    createEnvironment: ({ domElement, width, height }) => {
+        const scene = threeObjects.createScene();
         const camera = threeObjects.createCamera({ width, height });
         const light = threeObjects.createLight();
 
@@ -22,11 +22,6 @@ export const threeObjects = {
         canvas.setAttribute('class', 'globe');
 
         const controls = threeObjects.createControl({ camera, renderer });
-
-        // const { pickingScene, pickingTexture } = threeObjects.createPickingScene({
-        //     width,
-        //     height,
-        // });
 
         return { scene, camera, renderer, controls }; // pickingScene, pickingTexture
     },
@@ -59,12 +54,10 @@ export const threeObjects = {
         return controls;
     },
 
-    createScene: (applicationSettings) => {
+    createScene: () => {
         const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#2f383b');
 
-        if (applicationSettings.cssBackground === false) {
-            scene.background = new THREE.Color(applicationSettings.backgroundColor);
-        }
 
         return scene;
     },
@@ -94,30 +87,5 @@ export const threeObjects = {
         light.intensity = 0.9;
 
         return light;
-    },
-
-    createObjects(dataset) {
-        const { pointCloud, pickingCloud } = threeElements.pointCloud.call(this, dataset);
-        this.scene.add(pointCloud);
-        this.pickingScene.add(pickingCloud);
-
-        return { pointCloud, pickingCloud };
-    },
-
-    createAndAddObjects() {
-        const pointClouds = [];
-        const pickingClouds = [];
-        this.dataset.forEach((dataset) => {
-            const { pointCloud, pickingCloud } = threeObjects.createObjects.call(this, dataset);
-
-            const cloud = pointCloud as never;
-            pointCloud.name = dataset.name;
-            pointClouds.push(cloud);
-
-            pickingCloud.name = dataset.name;
-            pickingClouds.push(cloud);
-        });
-
-        return { pointClouds, pickingClouds };
     },
 };

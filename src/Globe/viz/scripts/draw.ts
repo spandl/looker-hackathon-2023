@@ -1,9 +1,9 @@
 import { threeEnvironment } from "./environment";
-import { IGlobeVisualization } from '../../types'
+import { IGlobeVisualization, ICanvas } from '../../types'
 
 export const draw = {
-    base(rootElementSelector: string): any {
-        const environment = threeEnvironment.create(rootElementSelector);
+    base(rootElementSelector: string, measure: ICanvas): any {
+        const environment = threeEnvironment.create(rootElementSelector, measure);
 
         // find globe in scene
         const { scene } = environment;

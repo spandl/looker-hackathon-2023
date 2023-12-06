@@ -1,4 +1,6 @@
 import * as d3 from 'd3';
+
+import './Globe/assets/css/base.scss';
 import { registration } from './DEV/scripts/registration'
 import { Globe } from './Globe/viz/Globe'
 

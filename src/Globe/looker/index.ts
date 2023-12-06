@@ -1,6 +1,8 @@
 import { registration } from './registration'
 import { Globe } from '../viz/Globe'
 
+import '../assets/css/base.scss';
+
 import { ILookerStudioPayload, ILookerConnector, ILookerBaseConnector } from './types'
 import { IGlobeVisualization } from '../types'
 

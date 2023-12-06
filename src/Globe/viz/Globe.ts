@@ -14,11 +14,12 @@ export class Globe implements IGlobeVisualization {
 
     constructor(rootElementSelector: string) {
         this.rootElementSelector = rootElementSelector;
-        this.environment = draw.base(rootElementSelector);
+        const measure = transform.measure(rootElementSelector);
+        this.environment = draw.base(rootElementSelector, measure);
+        this.measure = measure;
     }
 
     configuration(payload: ILookerStudioPayload) {
-        this.measure = transform.measure(this.rootElementSelector);
         this.vizStyles = transform.styles(payload.style);
         this.viewModel = transform.viewModel(payload.tables.DEFAULT);
     }
