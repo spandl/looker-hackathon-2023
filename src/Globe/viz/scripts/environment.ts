@@ -1,16 +1,15 @@
-import { threeElements } from './three/threeElements';
-import { threeObjects } from './three/threeObjects';
+import { sphere } from './three/sphere';
+import { threeObjects } from './three/objects';
 
-import { ICanvas } from '../../types'
+import { IMeasure } from '../../types'
 
 export const threeEnvironment = {
-    create: (rootElementSelector: string, measure: ICanvas) => {
-
-        const { width, height } = measure
+    create: (rootElementSelector: string, measure: IMeasure) => {
+        const { canvas, globeSize } = measure;
+        const { globeScale } = globeSize;
+        const { width, height } = canvas;
         const domElement = document.querySelector(rootElementSelector);
-        /* 
-        TODO > adapt to measure
-        */
+
         /** Environment contains scene, camera, renderer and controls */
         const environment = threeObjects.createEnvironment({
             domElement,
@@ -19,27 +18,11 @@ export const threeEnvironment = {
         });
 
         // Create globe and add to environment
-        const globe = threeElements.createGlobe(10);
+        const globe = sphere.createGlobe(globeSize.globeBase);
         globe.name = 'globe';
         const { scene } = environment;
         scene.add(globe);
 
         return environment;
-    },
-
-    animateGlobe({ progress }) {
-        const globes = this.globe.children.filter((d) => d.type === 'Mesh');
-
-        globes.forEach((globe) => {
-            globe.material.opacity = globe.maxOpacity * progress;
-
-            globe.scale.x = this.globeScale;
-            globe.scale.y = this.globeScale;
-            globe.scale.z = this.globeScale;
-        });
-
-        const rotationStep = this.views.insight.rotate === true ? (this.views.insight.rotationSpeed / 1000) : 0;
-        this.globe.rotation.y -= rotationStep;
-
     },
 }

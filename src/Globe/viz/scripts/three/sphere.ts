@@ -3,9 +3,10 @@ import * as THREE from 'three';
 
 import { base64Images } from '../base64Images';
 
-export const threeElements = {
-    createGlobe(radius: number) {
-        const geometry = new THREE.SphereGeometry(radius / 3, 360, 360, 0);
+export const sphere
+    = {
+    createGlobe(globeBase: number) {
+        const geometry = new THREE.SphereGeometry(globeBase, 360, 360, 0);
         const mask = new THREE.TextureLoader().load(base64Images.mask);
 
         const backMaterial = new THREE.MeshPhongMaterial({

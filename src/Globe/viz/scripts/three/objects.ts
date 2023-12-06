@@ -3,7 +3,7 @@
  * Scene, picking scene, renderer, camera, camera control, lights
  * Combine all point clouds to one object and add to scene and picking scene */
 
-import { threeElements } from './threeElements';
+import { sphere } from './sphere';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 

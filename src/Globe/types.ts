@@ -9,14 +9,29 @@ export interface IGlobeVisualization {
     environment: any
     viewModel: any;
     vizStyles: IVizStyles;
-    measure: ICanvas;
+    measure: IMeasure;
 
     createViz: (payload: ILookerStudioPayload) => void
+}
+
+export interface IMeasure {
+    canvas: ICanvas,
+    globeSize: IGlobeMeasure
+}
+
+export interface IGlobeMeasure {
+    globeBase: number,
+    globeRadius: number,
+    globeScale: number
 }
 
 export interface ICanvas {
     width: number
     height: number
+    max: number
+    min: number
+    ratio: number
+    longEdge: string
 }
 
 export interface IVizStyles {
