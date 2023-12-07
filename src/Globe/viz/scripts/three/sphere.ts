@@ -10,7 +10,7 @@ export const sphere
         const mask = new THREE.TextureLoader().load(base64Images.mask);
 
         const backMaterial = new THREE.MeshPhongMaterial({
-            color: 0x242a30,
+            color: new THREE.Color('#242a30'),
             transparent: true,
             side: THREE.BackSide,
             depthTest: true,
@@ -18,15 +18,15 @@ export const sphere
             reflectivity: 0,
             shininess: 0,
             opacity: 0,
-
             alphaMap: mask,
             map: mask,
         });
         const innerCube = new THREE.Mesh(geometry, backMaterial);
+        innerCube.name = 'innerCube'
         innerCube.maxOpacity = 0.5;
 
         const frontMaterial = new THREE.MeshPhongMaterial({
-            color: 0xffffff,
+            color: new THREE.Color('#FFFFFF'),
             flatShading: true,
             transparent: true,
             depthTest: true,
@@ -38,6 +38,7 @@ export const sphere
             opacity: 0,
         });
         const outerCube = new THREE.Mesh(geometry, frontMaterial);
+        outerCube.name = 'outerCube'
         outerCube.maxOpacity = 1.0;
 
         const centerMaterial = new THREE.MeshPhongMaterial({
@@ -52,6 +53,7 @@ export const sphere
             opacity: 0,
         });
         const centerCube = new THREE.Mesh(geometry, centerMaterial);
+        centerCube.name = 'centerCube'
         centerCube.maxOpacity = 0.6;
 
         const globe = new THREE.Group();

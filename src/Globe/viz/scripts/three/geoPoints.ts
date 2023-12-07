@@ -8,20 +8,37 @@ import { Tools } from '../tools';
 import { base64Images } from '../base64Images';
 
 import { ITableData, ITableHeaderExtended, ITableDataRow } from '../../../looker/types'
-import { IMeasure } from '../../../types';
+import { IMeasure, IGlobeVisualization, IColorMap } from '../../../types';
 
 export const geoPoints = {
 
-    createPointCloud: (data: ITableData, measure: IMeasure) => {
+    createPointCloud: (data: ITableData, chart: IGlobeVisualization) => {
+        const { measure, vizStyles } = chart;
         const { headers, rows } = data;
+        const { colorMap } = vizStyles
 
-        const colorArray = ['#FF0000', '#ff6361', '#bc5090', '#58508d', '#003f5c']
         const tableHeaders: ITableHeaderExtended[] = headers.map((d, index) => ({
             ...d, index
         }))
 
-        const geometry = geoPoints.createPointGeometry(rows, tableHeaders, colorArray, measure);
-        const material = geoPoints.createShaderMaterial();
+        // maxSize depends on number of items to be rendered
+        const calculatePointSize = (itemCount: number) => {
+            const maxSize = 40;
+            const minSize = 14;
+            itemCount = Math.max(1, itemCount);
+
+            const scale = d3.scaleLog()
+                .domain([200, 50000])
+                .range([maxSize, minSize])
+                .clamp(true);
+
+            return Math.floor(scale(itemCount))
+        }
+
+        const pointSize = calculatePointSize(rows.length)
+
+        const geometry = geoPoints.createPointGeometry(rows, tableHeaders, colorMap, measure, pointSize);
+        const material = geoPoints.createShaderMaterial(pointSize);
 
         const pointCloud = new THREE.Points(geometry, material);
         pointCloud.frustumCulled = false;
@@ -29,7 +46,8 @@ export const geoPoints = {
         return pointCloud;
     },
 
-    createPointGeometry: (rows: Array<ITableDataRow>, tableHeaders: ITableHeaderExtended[], colorArray: string[], measure: IMeasure) => {
+    createPointGeometry: (rows: Array<ITableDataRow>, tableHeaders: ITableHeaderExtended[],
+        colorMap: IColorMap, measure: IMeasure, fixedSize: number) => {
         const { globeSize } = measure;
         const { globeRadius, globeScale } = globeSize;
         const metricField = tableHeaders.find((d) => d.configId === 'metric');
@@ -37,6 +55,8 @@ export const geoPoints = {
 
         const geoField = tableHeaders.find((d) => d.configId === 'geoLocation');
         const geoIndex = geoField.index
+
+        const dimensionField = tableHeaders.find((d) => d.configId === 'dimensionBreakdown');
 
         const scaleDomain = d3.extent(rows, d => d[metricIndex])
         const domain = Tools.normalizeExtent(scaleDomain)
@@ -58,9 +78,18 @@ export const geoPoints = {
         // Size
         const sizes = new Float32Array(objCount).fill(1.0);
 
+        const getColor = (element: any[]): string => {
+            if (dimensionField) {
+                const { index } = dimensionField;
+                return colorMap[element[index]];
+            }
+
+            return colorMap.other;
+        }
+
         rows.forEach((element, index) => {
             // COLORS
-            const colorCode = colorArray[0]; // rework for dimension breakdown
+            const colorCode = getColor(element)
             const color = new THREE.Color(colorCode);
 
             colors[index * 3] = color.r;
@@ -68,12 +97,12 @@ export const geoPoints = {
             colors[index * 3 + 2] = color.b;
 
             // SIZE
-            const size = metricScale(element[metricIndex]);
+            const size = fixedSize; // metricScale(element[metricIndex]);
             sizes[index] = size;
 
             // GEO LOCATION
             const geoLocation = element[geoIndex].split(',')
-            const { x, y, z } = Tools.getCoordinatesFromLatLng(Number(geoLocation[0]), Number(geoLocation[1]), globeRadius + size / globeScale);
+            const { x, y, z } = Tools.getCoordinatesFromLatLng(Number(geoLocation[0]), Number(geoLocation[1]), globeRadius + fixedSize / 4 / globeScale);
 
             const t = 1
             positions[index * 3] = x * t;
@@ -94,11 +123,11 @@ export const geoPoints = {
         return geometry;
     },
 
-    createShaderMaterial: () => {
+    createShaderMaterial: (fixedSize: number) => {
 
         const vertexShader = point_vertex;
         const fragmentShader = point_fragment;
-        const pointTexture = new THREE.TextureLoader().load(base64Images.pointTexture);
+        const pointTexture = new THREE.TextureLoader().load(base64Images.circle50); // pointTexture
 
         const uniforms = {
             spotColor: { type: 'v3', value: new THREE.Color('#FFFFFF') },
@@ -111,12 +140,16 @@ export const geoPoints = {
         };
 
         const material = new THREE.PointsMaterial({
-            color: '#FFFFFF',
+            // color: '#FFFFFF',
+            vertexColors: true,
+            sizeAttenuation: true,
             map: pointTexture,
-            size: 100,
+            size: fixedSize,
             transparent: true,
-            alphaTest: 0.5
+            alphaTest: 0.5,
         });
+
+
         // const material = new THREE.ShaderMaterial({
         //     uniforms,
         //     vertexShader,

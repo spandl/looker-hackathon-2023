@@ -68,7 +68,13 @@
                     "id": "spinGlobe",
                     "label": "Auto spin globe",
                     "type": "CHECKBOX",
-                    "defaultValue": false
+                    "defaultValue": true
+                },
+                {
+                    "id": "maxDimensionColors",
+                    "label": "Maximum dimension colors (max 20)",
+                    "type": "INTERVAL",
+                    "defaultValue": 5
                 }
             ]
         }

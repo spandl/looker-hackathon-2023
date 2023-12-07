@@ -7,7 +7,7 @@ import { Globe } from './Globe/viz/Globe'
 import { ILookerStudioPayload, ILookerDevConnector, ILookerBaseConnector } from './Globe/looker/types'
 import { IGlobeVisualization } from './Globe/types'
 
-const payloadFileName = 'payload';
+const payloadFileName = 'dimensions'; // payload
 
 
 const createUpdateViz = async (vizProperties: ILookerDevConnector<IGlobeVisualization>) => {

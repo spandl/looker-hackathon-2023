@@ -1,8 +1,10 @@
+import * as d3 from 'd3';
+
 import { draw } from './scripts/draw'
 import { geoPoints } from './scripts/three/geoPoints'
 
-import { ILookerStudioPayload, ILookerVizStyle, ITableData } from '../looker/types';
-import { IGlobeVisualization, IViewModel, IVizStyles, ICanvas, IMeasure } from '../types';
+import { ILookerStudioPayload, ILookerVizStyle, ITableData, ITableHeaderExtended } from '../looker/types';
+import { IGlobeVisualization, IViewModel, IVizStyles, ICanvas, IMeasure, IColorMap } from '../types';
 
 export class Globe implements IGlobeVisualization {
     rootElementSelector: string;
@@ -11,11 +13,13 @@ export class Globe implements IGlobeVisualization {
     viewModel: any;
     vizStyles: IVizStyles;
     measure: IMeasure;
+    renderStarted: boolean
 
     constructor(rootElementSelector: string) {
         this.rootElementSelector = rootElementSelector;
         this.prepareMeasure(this.rootElementSelector);
         this.environment = draw.base(rootElementSelector, this.measure);
+        this.renderStarted = false;
     }
 
     prepareMeasure(rootElementSelector: string) {
@@ -26,7 +30,15 @@ export class Globe implements IGlobeVisualization {
     configuration(payload: ILookerStudioPayload) {
         this.prepareMeasure(this.rootElementSelector);
         this.vizStyles = transform.styles(payload.style);
-        this.viewModel = transform.viewModel(payload.tables.DEFAULT, this.measure);
+
+        /* 
+        TODO > expose max colors with settings
+        */
+        const dataset = payload.tables.DEFAULT;
+        const colorMap = transform.createColorMap(dataset, payload.theme, this.vizStyles.maxDimensionColors)
+        this.vizStyles.colorMap = colorMap;
+
+        this.viewModel = transform.viewModel(dataset, this);
     }
 
     createViz(payload: ILookerStudioPayload) {
@@ -37,7 +49,7 @@ export class Globe implements IGlobeVisualization {
 
 const transform = {
     styles: (style: ILookerVizStyle): IVizStyles => {
-        const visStyles = Object.keys(style).reduce((previousBlock: any, currentBlock) => {
+        const vizStyles = Object.keys(style).reduce((previousBlock: any, currentBlock) => {
             const value = style[currentBlock].value;
             const defaultValue = style[currentBlock].defaultValue;
 
@@ -46,7 +58,37 @@ const transform = {
 
         }, {})
 
-        return visStyles;
+        return vizStyles;
+    },
+
+    createColorMap: (data: ITableData, theme: any, maxColors: number): IColorMap => {
+        const { headers } = data
+        const tableHeaders: ITableHeaderExtended[] = headers.map((d, index) => ({
+            ...d, index
+        }))
+
+        const dimensionField = tableHeaders.find((d) => d.configId === 'dimensionBreakdown');
+        const metricField = tableHeaders.find((d) => d.configId === 'metric');
+        if (!dimensionField) return {
+            other: theme.themeSeriesColor[0].color, // default color is #1 in theme
+        };
+
+        const dimensionGroup = d3.rollup(data.rows, v => d3.sum(v, d => d[metricField.index]), d => d[dimensionField.index]);
+
+        const colorMap = Array.from(dimensionGroup)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, Math.min(maxColors, 20)) // there ain't no more colors + more than 5 makes little sense
+            .reduce((map, item, index) => {
+                const dimension = item[0];
+                const color = theme.themeSeriesColor[index].color
+                map[dimension] = color;
+                return map
+            }, {});
+
+        colorMap['other'] = '#FFFFFF'
+
+        return colorMap
+
     },
 
     measure: (rootElementSelector: string): IMeasure => {
@@ -80,12 +122,11 @@ const transform = {
         }
     },
 
-    viewModel: (data: ITableData, measure: IMeasure): any => {
+    viewModel: (data: ITableData, chart: IGlobeVisualization): any => {
         // Create the initial point cloud
-
-        const fakeData = Helper.generateSpherePoints(180, 360, 500)
+        // const fakeData = Helper.generateSpherePoints(180, 360, 500)
         // data.rows = fakeData
-        const pointCloud = geoPoints.createPointCloud(data, measure)
+        const pointCloud = geoPoints.createPointCloud(data, chart)
         return pointCloud;
     },
 }

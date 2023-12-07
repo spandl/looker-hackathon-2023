@@ -10,6 +10,7 @@ export interface IGlobeVisualization {
     viewModel: any;
     vizStyles: IVizStyles;
     measure: IMeasure;
+    renderStarted: boolean
 
     createViz: (payload: ILookerStudioPayload) => void
 }
@@ -35,8 +36,14 @@ export interface ICanvas {
 }
 
 export interface IVizStyles {
-    theme: string,
+    colorTheme: string,
     spinGlobe: boolean,
+    maxDimensionColors: number,
+    colorMap?: IColorMap,
+}
+
+export interface IColorMap {
+    [key: string]: string;
 }
 
 export interface IViewModel {

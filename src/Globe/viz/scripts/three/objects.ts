@@ -3,7 +3,6 @@
  * Scene, picking scene, renderer, camera, camera control, lights
  * Combine all point clouds to one object and add to scene and picking scene */
 
-import { sphere } from './sphere';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -12,8 +11,10 @@ export const threeObjects = {
         const scene = threeObjects.createScene();
         const camera = threeObjects.createCamera({ width, height });
         const light = threeObjects.createLight();
+        const backLight = threeObjects.createBackLight();
 
         camera.add(light);
+        camera.add(backLight);
         scene.add(camera);
 
         const renderer = threeObjects.createRenderer({ width, height });
@@ -41,24 +42,20 @@ export const threeObjects = {
         controls.screenSpacePanning = false;
         controls.enablePan = false;
 
-        controls.zoomSpeed = 0.75;
+        controls.zoomSpeed = 0.5;
         controls.rotateSpeed = 1;
         controls.panSpeed = 1;
 
-        controls.minDistance = 10;
+        controls.minDistance = 500;
         controls.maxDistance = 3000;
 
         controls.minPolarAngle = Math.PI * -2; // locked to Math.Pi and 0
         controls.maxPolarAngle = Math.PI * 2;
-
         return controls;
     },
 
     createScene: () => {
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color('#2f383b');
-
-
         return scene;
     },
 
@@ -84,6 +81,14 @@ export const threeObjects = {
     createLight: () => {
         const light = new THREE.DirectionalLight(0xffffff, 0.2);
         light.position.set(5, 3, 5);
+        light.intensity = 0.9;
+
+        return light;
+    },
+
+    createBackLight: () => {
+        const light = new THREE.DirectionalLight(0xffffff, 100);
+        // light.position.set(0, 0, 500,);
         light.intensity = 0.9;
 
         return light;
